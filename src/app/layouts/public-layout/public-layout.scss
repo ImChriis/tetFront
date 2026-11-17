@@ -1,0 +1,101 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(7, 26, 61, .92);
+  backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.topbar .wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 68px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.marca img { height: 40px; width: auto; }
+
+.marca span {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.15;
+  padding-left: 14px;
+  border-left: 1px solid rgba(255, 255, 255, .25);
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, .78);
+  text-decoration: none;
+  font-size: .92rem;
+  font-weight: 500;
+  padding: 9px 14px;
+  border-radius: 999px;
+  transition: background-color .2s, color .2s;
+}
+
+.nav-links mat-icon { font-size: 20px; width: 20px; height: 20px; }
+.nav-links a:hover { color: #fff; background: rgba(255, 255, 255, .08); }
+.nav-links a.activo { color: var(--azul-900); background: var(--oro); }
+
+.site-foot {
+  background: var(--azul-900);
+  color: rgba(255, 255, 255, .7);
+  padding: 44px 0 24px;
+  margin-top: auto;
+}
+
+.site-foot .wrap { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+.site-foot img { height: 46px; width: auto; }
+.site-foot h4 { color: #fff; font-size: .9rem; font-weight: 600; margin: 0 0 12px; }
+.site-foot p { font-size: .9rem; margin: 12px 0 0; }
+.site-foot ul { list-style: none; margin: 0; padding: 0; }
+.site-foot li { margin-bottom: 8px; font-size: .9rem; }
+.site-foot a { color: rgba(255, 255, 255, .7); text-decoration: none; }
+.site-foot a:hover { color: var(--oro); }
+
+.site-foot .legal {
+  grid-column: 1 / -1;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  padding-top: 18px;
+  font-size: .82rem;
+  color: rgba(255, 255, 255, .5);
+}
+
+@media (max-width: 860px) {
+  .marca span, .nav-links a span { display: none; }
+  .site-foot .wrap { grid-template-columns: 1fr; }
+}

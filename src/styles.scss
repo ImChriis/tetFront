@@ -1,1 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Tokens de la maqueta (tetv1/assest/css/tema.css)
+:root {
+  --azul-900: #071a3d;
+  --azul-800: #0b2a63;
+  --azul-600: #1d4fd7;
+  --azul-100: #e6edff;
+  --oro: #f4b544;
+  --oro-osc: #c98a12;
+  --tinta: #111a2e;
+  --tinta-2: #4a5671;
+  --linea: #dde3ee;
+  --fondo: #f5f7fb;
+  --blanco: #ffffff;
+  --faces: #d97706;
+  --fhae: #be185d;
+  --fing: #0e7490;
+  --radio: 16px;
+  --sombra: 0 1px 2px rgba(7, 26, 61, .06), 0 8px 24px rgba(7, 26, 61, .08);
+  --sombra-alta: 0 2px 4px rgba(7, 26, 61, .08), 0 20px 40px rgba(7, 26, 61, .16);
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        plain-family: Inter,
+        brand-family: Fraunces,
+      ),
+      density: 0,
+    )
+  );
+  // Material con el azul y fondo de la maqueta
+  @include mat.theme-overrides((
+    primary: #0b2a63,
+    surface: #ffffff,
+    surface-container: #ffffff,
+    background: #f5f7fb,
+  ));
+}
+
+body {
+  color-scheme: light;
+  font-family: var(--sans);
+  color: var(--tinta);
+  background: var(--fondo);
+  margin: 0;
+  min-height: 100%;
+}
+
+:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

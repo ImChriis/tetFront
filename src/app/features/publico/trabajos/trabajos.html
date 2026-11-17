@@ -1,0 +1,101 @@
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow anim"><mat-icon>school</mat-icon> Repositorio UJGH</span>
+    <h1 class="anim anim-2">Encuentra la <em>investigación</em> que necesitas.</h1>
+    <p class="lead-text anim anim-3">Busca por tema, autor, tutor o palabra clave entre los trabajos de grado de nuestras tres facultades.</p>
+    <div class="stats anim anim-4">
+      <div><strong>23</strong><span>trabajos publicados</span></div>
+      <div><strong>3</strong><span>facultades</span></div>
+      <div><strong>11</strong><span>carreras</span></div>
+      <div><strong>2004</strong><span>primer registro</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <form class="buscador" role="search" (submit)="$event.preventDefault()">
+    <div class="buscador-principal">
+      <mat-icon>search</mat-icon>
+      <input type="search" placeholder="Ej. liderazgo, redes, educación inicial…" aria-label="Buscar">
+      <button class="boton boton-oro"><mat-icon>arrow_forward</mat-icon> <span>Buscar</span></button>
+    </div>
+    <details class="filtros">
+      <summary><mat-icon>tune</mat-icon> Filtros avanzados <mat-icon class="chevron">expand_more</mat-icon></summary>
+      <div class="filtros-grid">
+        <div class="campo"><label for="f-anio">Año</label><select id="f-anio"><option>Todos</option><option>2024</option><option>2023</option></select></div>
+        <div class="campo"><label for="f-facultad">Facultad</label><select id="f-facultad"><option>Todas</option><option>FACES</option><option>FHAE</option><option>FING</option></select></div>
+        <div class="campo"><label for="f-carrera">Carrera</label><select id="f-carrera"><option>Todas</option></select></div>
+        <div class="campo"><label for="f-titulo">Título contiene</label><input id="f-titulo" type="text"></div>
+      </div>
+    </details>
+  </form>
+
+  <div class="atajos">
+    <span>Explorar por facultad:</span>
+    @for (fac of facultades; track fac) {
+      <a class="chip chip-fac" [style.--c]="colores[fac]" href="#">{{ fac }}</a>
+    }
+  </div>
+
+  <section class="resultados">
+    <div class="resultados-cabecera">
+      <div>
+        <h2>Trabajos más recientes</h2>
+        <p>{{ trabajos.length }} trabajos encontrados</p>
+      </div>
+    </div>
+
+    <div class="grid-tarjetas">
+      @for (t of trabajos; track t.titulo; let i = $index) {
+        <article class="tarjeta" [style.--c]="colores[t.siglas]" [style.--i]="i">
+          <div class="tarjeta-top"><span class="anio">{{ t.anio }}</span><span class="chip chip-fac">{{ t.siglas }}</span></div>
+          <h3>{{ t.titulo }}</h3>
+          <p class="carrera">{{ t.carrera }}</p>
+          <p class="persona"><mat-icon>edit</mat-icon><span><b>Autor:</b> {{ t.autores }}</span></p>
+          <p class="persona"><mat-icon>co_present</mat-icon><span><b>Tutor:</b> {{ t.tutores }}</span></p>
+          <div class="chips">
+            @for (p of t.palabras; track p) { <a class="chip" href="#">#{{ p }}</a> }
+          </div>
+          <div class="tarjeta-pie">
+            <button type="button" class="boton boton-azul boton-sm" (click)="abrirFicha(t)"><mat-icon>visibility</mat-icon> Ver ficha</button>
+            <a href="#" class="boton boton-suave boton-sm"><mat-icon>picture_as_pdf</mat-icon> PDF</a>
+          </div>
+        </article>
+      }
+    </div>
+
+    <nav class="paginacion">
+      <span class="actual">1</span><a href="#">2</a><a href="#">3</a>
+      <a href="#" aria-label="Siguiente"><mat-icon>chevron_right</mat-icon></a>
+    </nav>
+  </section>
+</main>
+
+<dialog class="ficha" #ficha (click)="$event.target === ficha && cerrarFicha()">
+  @if (seleccionado(); as t) {
+    <div class="ficha-cabecera" [style.--c]="colores[t.siglas]">
+      <span class="eyebrow">{{ t.siglas }} · {{ t.anio }}</span>
+      <h3>{{ t.titulo }}</h3>
+      <button class="cerrar" aria-label="Cerrar" (click)="cerrarFicha()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="ficha-cuerpo">
+      <div class="ficha-datos">
+        <dl>
+          <dt>Facultad</dt><dd>{{ t.facultad }}</dd>
+          <dt>Carrera</dt><dd>{{ t.carrera }}</dd>
+          <dt>Autores</dt><dd>{{ t.autores }}</dd>
+          <dt>Tutores</dt><dd>{{ t.tutores }}</dd>
+          <dt>Palabras clave</dt>
+          <dd class="chips">@for (p of t.palabras; track p) { <a class="chip" href="#">#{{ p }}</a> }</dd>
+        </dl>
+        <div class="ficha-acciones">
+          <a href="#" class="boton boton-suave boton-sm"><mat-icon>description</mat-icon> Abrir resumen</a>
+          <a href="#" class="boton boton-azul boton-sm"><mat-icon>picture_as_pdf</mat-icon> Trabajo completo</a>
+        </div>
+      </div>
+      <div class="ficha-vista">
+        <p><mat-icon class="grande">picture_as_pdf</mat-icon>Aquí se muestra la vista previa del resumen (PDF)</p>
+      </div>
+    </div>
+  }
+</dialog>

@@ -1,0 +1,27 @@
+<mat-sidenav-container class="contenedor">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <div class="marca">TEG UJGH</div>
+    <mat-nav-list>
+      @for (enlace of enlaces; track enlace.ruta) {
+        <a mat-list-item [routerLink]="enlace.ruta" routerLinkActive #rla="routerLinkActive"
+           [routerLinkActiveOptions]="{ exact: enlace.exacto }" [activated]="rla.isActive">
+          <mat-icon matListItemIcon>{{ enlace.icono }}</mat-icon>
+          <span matListItemTitle>{{ enlace.texto }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="toolbar">
+      <span class="espacio"></span>
+      <button mat-button (click)="salir()">
+        <mat-icon>logout</mat-icon>
+        Salir
+      </button>
+    </mat-toolbar>
+    <main>
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

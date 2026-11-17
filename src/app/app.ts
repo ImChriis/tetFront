@@ -8,5 +8,5 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('tet');
+  protected readonly title = signal('Trabajo Epecial de Titulación');
 }

@@ -1,0 +1,42 @@
+<header class="topbar">
+  <div class="wrap">
+    <a class="marca" routerLink="/">
+      <img src="imagenes/logo_ujgh.png" alt="UJGH">
+      <span>Repositorio de<br>Trabajos Especiales de Grado</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a routerLink="/trabajos" routerLinkActive="activo"><mat-icon>search</mat-icon> <span>Buscar trabajos</span></a></li>
+        <li><a routerLink="/contacto" routerLinkActive="activo"><mat-icon>mail</mat-icon> <span>Contacto</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<router-outlet />
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <img src="imagenes/logo_ujgh.png" alt="UJGH">
+      <p>Repositorio institucional de los Trabajos Especiales de Grado de la Universidad Dr. José Gregorio Hernández.</p>
+    </div>
+    <div>
+      <h4>Explorar</h4>
+      <ul>
+        <li><a routerLink="/trabajos">Buscar trabajos</a></li>
+        <li><a routerLink="/trabajos" [queryParams]="{ facultad: 'FACES' }">FACES</a></li>
+        <li><a routerLink="/trabajos" [queryParams]="{ facultad: 'FHAE' }">FHAE</a></li>
+        <li><a routerLink="/trabajos" [queryParams]="{ facultad: 'FING' }">FING</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Institución</h4>
+      <ul>
+        <li><a routerLink="/contacto">Contacto</a></li>
+        <li><a routerLink="/login">Acceso administrativo</a></li>
+      </ul>
+    </div>
+    <div class="legal">© {{ anio }} Trabajos Especiales de Grado UJGH. Todos los derechos reservados.</div>
+  </div>
+</footer>
