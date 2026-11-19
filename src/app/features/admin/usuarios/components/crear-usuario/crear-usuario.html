@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>{{ usuario ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="form-usuario" (ngSubmit)="guardar()" autocomplete="off">
+    <mat-form-field>
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" cdkFocusInitial>
+      @if (form.controls.nombre.invalid) { <mat-error>Obligatorio, máximo 50 caracteres</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Apellido</mat-label>
+      <input matInput formControlName="apellido">
+      @if (form.controls.apellido.invalid) { <mat-error>Obligatorio, máximo 50 caracteres</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Cédula</mat-label>
+      <input matInput formControlName="cedula" inputmode="numeric">
+      @if (form.controls.cedula.invalid) { <mat-error>Obligatoria, máximo 13 caracteres</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Correo</mat-label>
+      <input matInput formControlName="correo" type="email">
+      @if (form.controls.correo.invalid) { <mat-error>Ingresa un correo válido</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Usuario</mat-label>
+      <input matInput formControlName="usuario" autocomplete="off">
+      @if (form.controls.usuario.invalid) { <mat-error>Obligatorio, máximo 20 caracteres</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Rol</mat-label>
+      <mat-select formControlName="rol_id">
+        @for (r of roles.value(); track r.id) {
+          <mat-option [value]="r.id">{{ r.rol }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>Decano: solo su facultad</mat-hint>
+      @if (form.controls.rol_id.invalid) { <mat-error>Elige un rol</mat-error> }
+    </mat-form-field>
+    <mat-form-field class="completo">
+      <mat-label>{{ usuario ? 'Nueva contraseña' : 'Contraseña' }}</mat-label>
+      <input matInput formControlName="contrasena" [type]="verClave() ? 'text' : 'password'" autocomplete="new-password">
+      <button mat-icon-button matSuffix type="button" (click)="verClave.set(!verClave())" [attr.aria-label]="verClave() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+        <mat-icon>{{ verClave() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-hint>{{ usuario ? 'Déjala vacía para no cambiarla. ' : '' }}Mínimo 8 caracteres</mat-hint>
+      @if (form.controls.contrasena.invalid) { <mat-error>Mínimo 8 caracteres</mat-error> }
+    </mat-form-field>
+  </form>
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="guardando()">Cancelar</button>
+  <button mat-flat-button type="submit" form="form-usuario" [disabled]="guardando()">
+    {{ guardando() ? 'Guardando…' : usuario ? 'Guardar cambios' : 'Crear usuario' }}
+  </button>
+</mat-dialog-actions>

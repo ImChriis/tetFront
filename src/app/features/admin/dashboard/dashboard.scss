@@ -1,0 +1,225 @@
+:host { display: flex; flex-direction: column; gap: 20px; }
+
+.bienvenida {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--oro-osc);
+}
+
+h1 { font: 600 2rem var(--serif); color: var(--tinta); margin: 6px 0 4px; }
+.bienvenida p { margin: 0; color: var(--tinta-2); }
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 20px 22px;
+  min-width: 0;
+}
+
+h2 { font: 600 1.1rem var(--serif); color: var(--tinta); margin: 0 0 2px; }
+.sub { margin: 0 0 16px; color: var(--tinta-2); font-size: .85rem; }
+.vacio { color: var(--tinta-2); font-size: .9rem; }
+.aviso { color: #b42318; }
+
+/* ---------- KPIs ---------- */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 20px;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.kpi mat-icon { color: var(--azul-600); margin-bottom: 8px; }
+.kpi strong { font: 600 2.1rem var(--serif); color: var(--tinta); line-height: 1; }
+.kpi span { color: var(--tinta-2); font-size: .85rem; }
+.kpi small { color: var(--tinta-2); font-size: .75rem; margin-top: 6px; }
+
+.medidor { height: 6px; margin-top: 10px; border-radius: 999px; background: var(--azul-100); overflow: hidden; }
+.medidor div { height: 100%; border-radius: 999px; background: var(--azul-600); }
+
+.fila { display: grid; gap: 20px; }
+.fila-2 { grid-template-columns: 2fr 1fr; }
+.fila-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* ---------- Columnas por año ---------- */
+.columnas { display: flex; gap: 8px; height: 220px; }
+
+.eje-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 22px;
+  font-size: .7rem;
+  color: var(--tinta-2);
+  text-align: right;
+  min-width: 16px;
+}
+
+.eje-y span { transform: translateY(-50%); }
+.eje-y span:last-child { transform: translateY(50%); }
+
+.area { position: relative; flex: 1; display: flex; align-items: stretch; padding-bottom: 22px; }
+
+.guias {
+  position: absolute;
+  inset: 0 0 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.guias i { display: block; height: 1px; background: var(--linea); }
+
+// El slot completo es la zona de hover, más grande que la barra
+.slot {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: default;
+}
+
+.slot:hover .barra { background: var(--azul-800); }
+
+.barra {
+  width: min(24px, 70%);
+  min-height: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--azul-600);
+  transition: background-color .15s;
+}
+
+.barra.vacia { height: 0; }
+
+.valor { font: 600 .75rem var(--sans); color: var(--tinta); margin-bottom: 4px; }
+
+.anio {
+  position: absolute;
+  bottom: -22px;
+  font-size: .7rem;
+  color: var(--tinta-2);
+  white-space: nowrap;
+}
+
+.anio.oculto { visibility: hidden; }
+
+/* ---------- Barras horizontales ---------- */
+.barras { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+
+.barras li {
+  display: grid;
+  grid-template-columns: 72px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+}
+
+.carreras li { grid-template-columns: minmax(0, 1.3fr) 1fr 28px; }
+
+.etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--tinta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.carreras .etiqueta { display: block; }
+
+.punto { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+.pista { height: 12px; border-radius: 0 4px 4px 0; }
+.relleno { display: block; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; }
+
+[data-fac="FACES"] { background: var(--faces); }
+[data-fac="FHAE"] { background: var(--fhae); }
+[data-fac="FING"] { background: var(--fing); }
+.relleno.azul { background: var(--azul-600); }
+
+.numero { font: 600 .85rem var(--sans); color: var(--tinta); text-align: right; }
+
+/* ---------- Palabras ---------- */
+.nube { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.palabra {
+  --peso: .5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: calc(.78rem + var(--peso) * .3rem);
+  color: var(--azul-800);
+  background: color-mix(in srgb, var(--azul-600) calc(8% + var(--peso) * 14%), #fff);
+  text-decoration: none;
+  transition: transform .15s;
+}
+
+.palabra:hover { transform: translateY(-1px); }
+.palabra b { font-size: .7rem; color: var(--tinta-2); }
+
+/* ---------- Listas ---------- */
+.lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+
+.lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.lista li:last-child { border-bottom: 0; }
+
+.texto { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.texto b { font-weight: 500; font-size: .9rem; color: var(--tinta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.texto small { font-size: .78rem; color: var(--tinta-2); }
+
+.falta { display: inline-flex; align-items: center; gap: 2px; color: #b54708; }
+.falta mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+.todo-bien { color: #067647; gap: 8px; }
+
+.anio-chip {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--azul-100);
+  color: var(--azul-800);
+  font: 600 .85rem var(--serif);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .fila-2, .fila-3 { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,139 @@
+<h2 mat-dialog-title>{{ id ? 'Editar trabajo' : 'Nuevo trabajo' }}</h2>
+
+@if (cargando.isLoading() || guardando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="form-trabajo" (ngSubmit)="guardar()">
+    <mat-form-field class="completo">
+      <mat-label>Título</mat-label>
+      <textarea matInput formControlName="titulo" rows="2" cdkFocusInitial></textarea>
+      <mat-hint align="end">{{ form.controls.titulo.value.length }}/255</mat-hint>
+      @if (form.controls.titulo.hasError('required')) { <mat-error>El título es obligatorio</mat-error> }
+      @if (form.controls.titulo.hasError('maxlength')) { <mat-error>Máximo 255 caracteres</mat-error> }
+    </mat-form-field>
+
+    <fieldset class="autores completo" formArrayName="autores">
+      <legend>Autores</legend>
+      @for (autor of form.controls.autores.controls; track autor; let i = $index) {
+        <div class="autor" [formGroupName]="i">
+          <span class="numero" aria-hidden="true">{{ i + 1 }}</span>
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" [attr.aria-label]="'Nombre del autor ' + (i + 1)">
+            @if (autor.controls.nombre.invalid) { <mat-error>Obligatorio</mat-error> }
+          </mat-form-field>
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido" [attr.aria-label]="'Apellido del autor ' + (i + 1)">
+            @if (autor.controls.apellido.invalid) { <mat-error>Obligatorio</mat-error> }
+          </mat-form-field>
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Cédula</mat-label>
+            <input matInput formControlName="cedula" placeholder="V-12345678" [attr.aria-label]="'Cédula del autor ' + (i + 1)">
+            @if (autor.controls.cedula.hasError('required')) { <mat-error>Obligatoria</mat-error> }
+            @if (autor.controls.cedula.hasError('pattern')) { <mat-error>Ej.: 12345678 o V-12345678</mat-error> }
+          </mat-form-field>
+          <button type="button" mat-icon-button (click)="quitarAutor(i)" [disabled]="form.controls.autores.length === 1"
+                  [attr.aria-label]="'Quitar autor ' + (i + 1)"><mat-icon>close</mat-icon></button>
+        </div>
+      }
+      @if (form.controls.autores.length < maxAutores) {
+        <button type="button" mat-button class="agregar" (click)="agregarAutor()" [disabled]="form.disabled">
+          <mat-icon>person_add</mat-icon> Agregar otro autor
+        </button>
+      }
+    </fieldset>
+
+    <fieldset class="autores completo" formGroupName="tutor">
+      <legend>Tutor</legend>
+      <div class="autor tutor">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" aria-label="Nombre del tutor">
+          @if (form.controls.tutor.controls.nombre.invalid) { <mat-error>Obligatorio</mat-error> }
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido" aria-label="Apellido del tutor">
+          @if (form.controls.tutor.controls.apellido.invalid) { <mat-error>Obligatorio</mat-error> }
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Cédula</mat-label>
+          <input matInput formControlName="cedula" placeholder="V-12345678" aria-label="Cédula del tutor">
+          @if (form.controls.tutor.controls.cedula.hasError('required')) { <mat-error>Obligatoria</mat-error> }
+          @if (form.controls.tutor.controls.cedula.hasError('pattern')) { <mat-error>Ej.: 12345678 o V-12345678</mat-error> }
+        </mat-form-field>
+      </div>
+    </fieldset>
+
+    <mat-form-field>
+      <mat-label>Año</mat-label>
+      <input matInput type="number" formControlName="anio" min="1901" [max]="anioMax">
+      @if (form.controls.anio.invalid) { <mat-error>Año entre 1901 y {{ anioMax }}</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Carrera</mat-label>
+      <mat-select formControlName="carrera_id">
+        @for (g of grupos(); track g.facultad.id) {
+          <mat-optgroup [label]="g.facultad.siglas + ' · ' + g.facultad.facultad">
+            @for (c of g.carreras; track c.id) {
+              <mat-option [value]="c.id">{{ c.carrera }}</mat-option>
+            }
+          </mat-optgroup>
+        }
+      </mat-select>
+      @if (form.controls.carrera_id.invalid) { <mat-error>Elige una carrera</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field class="completo">
+      <mat-label>Palabras clave</mat-label>
+      <input matInput formControlName="palabras_claves">
+      <mat-hint>Separadas por comas, ej.: redes, domótica, IoT</mat-hint>
+      @if (form.controls.palabras_claves.invalid) { <mat-error>Obligatorio, máximo 140 caracteres</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field class="completo">
+      <mat-label>Líneas de investigación</mat-label>
+      <mat-select formControlName="lineas" multiple>
+        @for (l of lineas.value(); track l.id) {
+          <mat-option [value]="l.id">{{ l.nombre_linea }} <small>· {{ l.eje_tematico }}</small></mat-option>
+        } @empty {
+          <mat-option disabled>Aún no hay líneas registradas</mat-option>
+        }
+      </mat-select>
+      <mat-hint>Opcional</mat-hint>
+    </mat-form-field>
+
+    @for (tipo of tipos; track tipo) {
+      <div class="archivo">
+        <mat-icon [class.listo]="archivos()[tipo] || actuales()[tipo]">picture_as_pdf</mat-icon>
+        <div class="archivo-texto">
+          <b>{{ tipo === 'resumen' ? 'Resumen' : 'Trabajo completo' }}</b>
+          <small>
+            @if (archivos()[tipo]; as a) { {{ a.name }} }
+            @else if (actuales()[tipo]) { Ya tiene un PDF cargado; elige otro para reemplazarlo }
+            @else { Sin archivo · PDF de máximo 20 MB }
+          </small>
+        </div>
+        <input #input type="file" accept="application/pdf" hidden (change)="elegirArchivo(tipo, input)">
+        <button type="button" mat-stroked-button (click)="input.click()" [disabled]="form.disabled">
+          {{ archivos()[tipo] || actuales()[tipo] ? 'Cambiar' : 'Elegir PDF' }}
+        </button>
+      </div>
+    }
+  </form>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="guardando()">Cancelar</button>
+  <button mat-flat-button type="submit" form="form-trabajo" [disabled]="guardando() || form.disabled">
+    {{ guardando() ? 'Guardando…' : id ? 'Guardar cambios' : 'Crear trabajo' }}
+  </button>
+</mat-dialog-actions>

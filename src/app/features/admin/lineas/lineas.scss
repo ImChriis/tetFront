@@ -1,0 +1,57 @@
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h1 { font: 600 1.9rem var(--serif); color: var(--tinta); margin: 0 0 4px; }
+.cabecera p { margin: 0; color: var(--tinta-2); }
+
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.filtros { display: flex; padding: 16px; }
+.busqueda { flex: 1; max-width: 420px; }
+
+.tabla { overflow-x: auto; }
+table { width: 100%; }
+
+.nombre { font-weight: 500; color: var(--tinta); }
+
+.eje {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--azul-100);
+  color: var(--azul-800);
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+.acciones { width: 104px; text-align: right; white-space: nowrap; }
+
+.vacio {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--tinta-2);
+}
+
+.vacio mat-icon { display: block; margin: 0 auto 8px; color: var(--azul-600); font-size: 36px; width: 36px; height: 36px; }
+.vacio b { display: block; color: var(--tinta); font: 600 1.1rem var(--serif); margin-bottom: 4px; }
+.vacio span { display: block; margin-bottom: 14px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

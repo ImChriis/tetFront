@@ -1,8 +1,11 @@
 <mat-sidenav-container class="contenedor">
   <mat-sidenav mode="side" opened class="sidenav">
-    <div class="marca">TEG UJGH</div>
+    <a class="marca" routerLink="/admin">
+      <img src="imagenes/logo_ujgh.png" alt="UJGH">
+      <span>Panel TEG</span>
+    </a>
     <mat-nav-list>
-      @for (enlace of enlaces; track enlace.ruta) {
+      @for (enlace of enlaces(); track enlace.ruta) {
         <a mat-list-item [routerLink]="enlace.ruta" routerLinkActive #rla="routerLinkActive"
            [routerLinkActiveOptions]="{ exact: enlace.exacto }" [activated]="rla.isActive">
           <mat-icon matListItemIcon>{{ enlace.icono }}</mat-icon>
@@ -10,11 +13,21 @@
         </a>
       }
     </mat-nav-list>
+    <a mat-list-item class="ver-sitio" routerLink="/trabajos" target="_blank">
+      <mat-icon matListItemIcon>open_in_new</mat-icon>
+      <span matListItemTitle>Ver repositorio</span>
+    </a>
   </mat-sidenav>
 
   <mat-sidenav-content>
     <mat-toolbar class="toolbar">
       <span class="espacio"></span>
+      @if (usuario(); as u) {
+        <div class="sesion">
+          <span class="avatar" aria-hidden="true">{{ u.nombre[0] }}{{ u.apellido[0] }}</span>
+          <span class="datos"><b>{{ u.nombre }} {{ u.apellido }}</b><small>{{ u.rol }}</small></span>
+        </div>
+      }
       <button mat-button (click)="salir()">
         <mat-icon>logout</mat-icon>
         Salir

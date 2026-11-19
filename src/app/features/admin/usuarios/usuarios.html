@@ -1,1 +1,62 @@
-<p>usuarios works!</p>
+<header class="cabecera">
+  <div>
+    <h1>Usuarios</h1>
+    <p>Personas con acceso al panel: administradores y decanos.</p>
+  </div>
+  <button mat-flat-button (click)="abrir()"><mat-icon>person_add</mat-icon> Nuevo usuario</button>
+</header>
+
+<section class="panel">
+  @if (usuarios.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  <div class="tabla">
+    <table mat-table [dataSource]="usuarios.value()">
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let u">
+          <span class="persona">
+            <span class="avatar" aria-hidden="true">{{ u.nombre[0] }}{{ u.apellido[0] }}</span>
+            <span><b>{{ u.nombre }} {{ u.apellido }}</b><small>C.I. {{ u.cedula }}</small></span>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="usuario">
+        <th mat-header-cell *matHeaderCellDef>Usuario</th>
+        <td mat-cell *matCellDef="let u">
+          <code>{{ u.usuario }}</code>
+          @if (u.id === yo()?.id) { <span class="tu">Tú</span> }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="correo">
+        <th mat-header-cell *matHeaderCellDef>Correo</th>
+        <td mat-cell *matCellDef="let u">{{ u.correo }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rol">
+        <th mat-header-cell *matHeaderCellDef>Rol</th>
+        <td mat-cell *matCellDef="let u"><span class="rol" [class.admin]="u.rol_id === 4">{{ u.rol }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef><span class="sr-only">Acciones</span></th>
+        <td mat-cell *matCellDef="let u" class="acciones">
+          <button mat-icon-button (click)="abrir(u)" matTooltip="Editar" [attr.aria-label]="'Editar ' + u.usuario"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="eliminar(u)" [disabled]="u.id === yo()?.id"
+                  [matTooltip]="u.id === yo()?.id ? 'No puedes eliminar tu propio usuario' : 'Eliminar'"
+                  [attr.aria-label]="'Eliminar ' + u.usuario"><mat-icon>delete</mat-icon></button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="vacio" [attr.colspan]="columnas.length">
+          {{ usuarios.error() ? 'No se pudieron cargar los usuarios.' : usuarios.isLoading() ? 'Cargando…' : 'No hay usuarios.' }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</section>

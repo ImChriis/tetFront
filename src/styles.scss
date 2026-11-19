@@ -15,7 +15,7 @@
   --blanco: #ffffff;
   --faces: #d97706;
   --fhae: #be185d;
-  --fing: #0e7490;
+  --fing: #0891b2;
   --radio: 16px;
   --sombra: 0 1px 2px rgba(7, 26, 61, .06), 0 8px 24px rgba(7, 26, 61, .08);
   --sombra-alta: 0 2px 4px rgba(7, 26, 61, .08), 0 20px 40px rgba(7, 26, 61, .16);
@@ -61,3 +61,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+// El visor de PDF ocupa todo el panel del diálogo, sin el relleno de Material
+.visor-pdf-panel .mat-mdc-dialog-surface { overflow: hidden; }

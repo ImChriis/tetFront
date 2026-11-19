@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ linea ? 'Editar línea de investigación' : 'Nueva línea de investigación' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" id="form-linea" (ngSubmit)="guardar()">
+    <mat-form-field>
+      <mat-label>Nombre de la línea</mat-label>
+      <input matInput formControlName="nombre_linea" cdkFocusInitial>
+      @if (form.controls.nombre_linea.invalid) { <mat-error>Obligatorio, máximo 255 caracteres</mat-error> }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Eje temático</mat-label>
+      <input matInput formControlName="eje_tematico">
+      <mat-hint>Ej.: Tecnología e innovación, Gestión organizacional</mat-hint>
+      @if (form.controls.eje_tematico.invalid) { <mat-error>Obligatorio, máximo 255 caracteres</mat-error> }
+    </mat-form-field>
+  </form>
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="guardando()">Cancelar</button>
+  <button mat-flat-button type="submit" form="form-linea" [disabled]="guardando()">
+    {{ guardando() ? 'Guardando…' : linea ? 'Guardar cambios' : 'Crear línea' }}
+  </button>
+</mat-dialog-actions>

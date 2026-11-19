@@ -1,1 +1,165 @@
-<p>dashboard works!</p>
+<header class="bienvenida">
+  <div>
+    <span class="eyebrow">Panel · {{ usuario()?.es_admin ? 'Toda la universidad' : usuario()?.rol }}</span>
+    <h1>{{ saludo }}, {{ usuario()?.nombre }}.</h1>
+    <p>Así va el repositorio de Trabajos Especiales de Grado.</p>
+  </div>
+  <div class="acciones">
+    <a mat-stroked-button routerLink="/trabajos" target="_blank"><mat-icon>open_in_new</mat-icon> Ver repositorio</a>
+    <button mat-flat-button (click)="abrirTrabajo()"><mat-icon>add</mat-icon> Nuevo trabajo</button>
+  </div>
+</header>
+
+@if (datos.isLoading() && !datos.value()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (datos.error()) {
+  <div class="panel aviso">
+    No se pudieron cargar las estadísticas.
+    <button mat-button (click)="datos.reload()">Reintentar</button>
+  </div>
+}
+
+@if (datos.value(); as d) {
+  <section class="kpis">
+    <article class="kpi">
+      <mat-icon>menu_book</mat-icon>
+      <strong>{{ d.totales.trabajos | number }}</strong>
+      <span>Trabajos publicados</span>
+    </article>
+    <article class="kpi">
+      <mat-icon>school</mat-icon>
+      <strong>{{ d.totales.carreras }}</strong>
+      <span>Carreras</span>
+    </article>
+    <article class="kpi">
+      <mat-icon>hub</mat-icon>
+      <strong>{{ d.totales.lineas }}</strong>
+      <span>Líneas de investigación</span>
+    </article>
+    <article class="kpi">
+      <mat-icon>task_alt</mat-icon>
+      <strong>{{ completos() }}%</strong>
+      <span>Expedientes completos</span>
+      <div class="medidor" role="progressbar" [attr.aria-valuenow]="completos()" aria-valuemin="0" aria-valuemax="100"
+           [attr.aria-label]="d.totales.completos + ' de ' + d.totales.trabajos + ' con resumen y trabajo completo'">
+        <div [style.width.%]="completos()"></div>
+      </div>
+      <small>{{ d.totales.completos }} de {{ d.totales.trabajos }} con resumen y trabajo completo</small>
+    </article>
+  </section>
+
+  <section class="fila fila-2">
+    <article class="panel">
+      <h2>Trabajos por año</h2>
+      <p class="sub">Cuántos trabajos de grado se registraron cada año.</p>
+      @if (anios().length) {
+        <div class="columnas" role="img" [attr.aria-label]="'Gráfico de columnas de trabajos por año, de ' + anios()[0].anio + ' a ' + anios().at(-1)?.anio">
+          <div class="eje-y" aria-hidden="true">
+            <span>{{ topeAnios() }}</span><span>{{ topeAnios() / 2 }}</span><span>0</span>
+          </div>
+          <div class="area">
+            <div class="guias" aria-hidden="true"><i></i><i></i><i></i></div>
+            @for (a of anios(); track a.anio; let i = $index) {
+              <div class="slot" [matTooltip]="a.anio + ': ' + a.total + (a.total === 1 ? ' trabajo' : ' trabajos')" matTooltipPosition="above">
+                @if (a.total === maxAnio()) {
+                  <span class="valor">{{ a.total }}</span>
+                }
+                <div class="barra" [class.vacia]="!a.total" [style.height.%]="(a.total / topeAnios()) * 100"></div>
+                <span class="anio" [class.oculto]="!rotular(i, a.total)">{{ a.anio }}</span>
+              </div>
+            }
+          </div>
+        </div>
+        <table class="sr-only">
+          <caption>Trabajos por año</caption>
+          <tr><th>Año</th><th>Trabajos</th></tr>
+          @for (a of anios(); track a.anio) { <tr><td>{{ a.anio }}</td><td>{{ a.total }}</td></tr> }
+        </table>
+      } @else {
+        <p class="vacio">Aún no hay trabajos registrados.</p>
+      }
+    </article>
+
+    <article class="panel">
+      <h2>Por facultad</h2>
+      <p class="sub">Trabajos de cada facultad.</p>
+      <ul class="barras">
+        @for (f of d.por_facultad; track f.siglas) {
+          <li [matTooltip]="f.facultad">
+            <span class="etiqueta"><i class="punto" [attr.data-fac]="f.siglas"></i>{{ f.siglas }}</span>
+            <span class="pista"><span class="relleno" [attr.data-fac]="f.siglas" [style.width.%]="(f.total / maxFacultad()) * 100"></span></span>
+            <span class="numero">{{ f.total }}</span>
+          </li>
+        }
+      </ul>
+    </article>
+  </section>
+
+  <section class="fila fila-3">
+    <article class="panel">
+      <h2>Carreras con más trabajos</h2>
+      <ul class="barras carreras">
+        @for (c of d.por_carrera; track c.carrera) {
+          <li>
+            <span class="etiqueta" [title]="c.carrera">{{ c.carrera }}</span>
+            <span class="pista"><span class="relleno azul" [style.width.%]="(c.total / maxCarrera()) * 100"></span></span>
+            <span class="numero">{{ c.total }}</span>
+          </li>
+        } @empty {
+          <li class="vacio">Sin datos todavía.</li>
+        }
+      </ul>
+    </article>
+
+    <article class="panel">
+      <h2>Palabras clave más usadas</h2>
+      <p class="sub">Abre la búsqueda pública con esa palabra.</p>
+      <div class="nube">
+        @for (p of d.palabras; track p.palabra) {
+          <a class="palabra" [routerLink]="'/trabajos'" [queryParams]="{ q: p.palabra }" target="_blank"
+             [style.--peso]="p.total / maxPalabra()">
+            {{ p.palabra }} <b>{{ p.total }}</b>
+          </a>
+        } @empty {
+          <p class="vacio">Sin palabras clave todavía.</p>
+        }
+      </div>
+    </article>
+
+    <article class="panel">
+      <h2>Pendientes de PDF</h2>
+      <p class="sub">Trabajos a los que les falta algún archivo.</p>
+      <ul class="lista">
+        @for (p of d.pendientes; track p.id) {
+          <li>
+            <span class="texto">
+              <b>{{ p.titulo }}</b>
+              <small>
+                {{ p.siglas }} · {{ p.anio }} ·
+                <span class="falta"><mat-icon>warning</mat-icon>Falta {{ p.falta_resumen && p.falta_tesis ? 'resumen y trabajo' : p.falta_resumen ? 'resumen' : 'trabajo completo' }}</span>
+              </small>
+            </span>
+            <button mat-stroked-button (click)="abrirTrabajo(p.id)">Completar</button>
+          </li>
+        } @empty {
+          <li class="todo-bien"><mat-icon>check_circle</mat-icon> Todos los trabajos tienen sus PDF.</li>
+        }
+      </ul>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2>Agregados recientemente</h2>
+    <ul class="lista recientes">
+      @for (r of d.recientes; track r.id) {
+        <li>
+          <span class="anio-chip">{{ r.anio }}</span>
+          <span class="texto"><b>{{ r.titulo }}</b><small>{{ r.siglas }} · {{ r.carrera }}</small></span>
+          <button mat-icon-button (click)="abrirTrabajo(r.id)" matTooltip="Editar" [attr.aria-label]="'Editar ' + r.titulo"><mat-icon>edit</mat-icon></button>
+        </li>
+      }
+    </ul>
+  </section>
+}

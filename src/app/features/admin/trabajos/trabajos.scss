@@ -1,0 +1,71 @@
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h1 { font: 600 1.9rem var(--serif); color: var(--tinta); margin: 0 0 4px; }
+.cabecera p { margin: 0; color: var(--tinta-2); }
+
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+
+.filtros { display: flex; flex-wrap: wrap; gap: 12px; padding: 16px; }
+.busqueda { flex: 1; min-width: 260px; }
+
+.tabla { overflow-x: auto; }
+table { width: 100%; }
+
+td small { display: block; color: var(--tinta-2); font-size: .8rem; margin-top: 2px; }
+.titulo { font-weight: 500; color: var(--tinta); }
+.anio { font: 600 1.05rem var(--serif); color: var(--azul-800); width: 64px; }
+
+.facultad {
+  --c: var(--azul-600);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 .75rem var(--sans);
+  color: var(--tinta);
+}
+
+.facultad::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.facultad[data-fac="FACES"] { --c: var(--faces); }
+.facultad[data-fac="FHAE"] { --c: var(--fhae); }
+.facultad[data-fac="FING"] { --c: var(--fing); }
+
+.pdfs { display: inline-flex; gap: 6px; }
+
+.pdf {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font: 600 .75rem var(--sans);
+  text-decoration: none;
+}
+
+.pdf.ok { background: var(--azul-100); color: var(--azul-800); border: 0; cursor: pointer; }
+.pdf.ok:hover { background: #d6e1ff; }
+.pdf.falta { background: #fef3f2; color: #b42318; border: 1px dashed #fda29b; }
+
+.acciones { width: 104px; text-align: right; white-space: nowrap; }
+.vacio { padding: 32px 16px; text-align: center; color: var(--tinta-2); }
+.aviso { padding: 16px; color: #b42318; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

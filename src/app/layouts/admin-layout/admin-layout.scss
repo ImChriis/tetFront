@@ -1,27 +1,75 @@
 .contenedor {
   height: 100dvh;
+  background: var(--fondo);
 }
 
 .sidenav {
-  width: 240px;
-  border-right: 1px solid var(--mat-sys-outline-variant);
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  background: var(--azul-900);
+  border-right: 0;
+  --mat-list-list-item-label-text-color: rgba(255, 255, 255, .78);
+  --mat-list-list-item-leading-icon-color: rgba(255, 255, 255, .6);
+  --mat-list-list-item-hover-label-text-color: #fff;
+  --mat-list-list-item-hover-leading-icon-color: #fff;
+  --mat-list-list-item-focus-label-text-color: #fff;
+  --mat-list-active-indicator-color: rgba(255, 255, 255, .1);
+}
+
+.sidenav ::ng-deep .mat-drawer-inner-container { display: flex; flex-direction: column; }
+
+// Material pinta hover y focus con otros tokens: sin esto, el ítem recién clicado (enfocado) no se ve dorado
+.sidenav .mdc-list-item--activated {
+  --mat-list-list-item-label-text-color: var(--oro);
+  --mat-list-list-item-leading-icon-color: var(--oro);
+  --mat-list-list-item-hover-label-text-color: var(--oro);
+  --mat-list-list-item-hover-leading-icon-color: var(--oro);
+  --mat-list-list-item-focus-label-text-color: var(--oro);
 }
 
 .marca {
-  padding: 20px 16px;
-  color: var(--mat-sys-primary);
-  font: var(--mat-sys-title-large);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 18px 18px;
+  color: #fff;
+  text-decoration: none;
 }
+
+.marca img { height: 34px; width: auto; }
+.marca span { font-family: var(--serif); font-size: 1.1rem; padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .25); }
+
+.ver-sitio { margin-top: auto; margin-bottom: 12px; }
 
 .toolbar {
-  background: var(--mat-sys-surface);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--blanco);
+  border-bottom: 1px solid var(--linea);
+  gap: 16px;
 }
 
-.espacio {
-  flex: 1;
+.espacio { flex: 1; }
+
+.sesion { display: flex; align-items: center; gap: 10px; }
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--azul-100);
+  color: var(--azul-800);
+  font: 600 .85rem var(--sans);
 }
 
-main {
-  padding: 24px;
+.datos { display: flex; flex-direction: column; line-height: 1.2; }
+.datos b { font: 600 .9rem var(--sans); color: var(--tinta); }
+.datos small { font-size: .75rem; color: var(--tinta-2); }
+
+main { padding: 28px; max-width: 1280px; }
+
+@media (max-width: 720px) {
+  .datos { display: none; }
+  main { padding: 16px; }
 }

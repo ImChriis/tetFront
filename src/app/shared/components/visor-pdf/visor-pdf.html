@@ -1,0 +1,22 @@
+<header class="cabecera">
+  <div class="textos">
+    @if (datos.subtitulo) {
+      <span class="subtitulo">{{ datos.subtitulo }}</span>
+    }
+    <h2 mat-dialog-title>{{ datos.titulo }}</h2>
+  </div>
+  <a mat-icon-button [href]="datos.url" target="_blank" rel="noopener" matTooltip="Abrir en otra pestaña" aria-label="Abrir en otra pestaña">
+    <mat-icon>open_in_new</mat-icon>
+  </a>
+  <button mat-icon-button mat-dialog-close matTooltip="Cerrar" aria-label="Cerrar visor">
+    <mat-icon>close</mat-icon>
+  </button>
+</header>
+
+<div class="cuerpo">
+  @if (url) {
+    <iframe [src]="url" [title]="datos.titulo"></iframe>
+  } @else {
+    <p class="aviso">No se puede mostrar este archivo.</p>
+  }
+</div>

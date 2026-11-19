@@ -1,0 +1,10 @@
+form { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; min-width: min(440px, 80vw); }
+
+.error {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fef3f2;
+  color: #b42318;
+  font-size: .9rem;
+}

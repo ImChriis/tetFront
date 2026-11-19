@@ -8,7 +8,7 @@ import { MAT_ICON_DEFAULT_OPTIONS } from '@angular/material/icon';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(routes, withViewTransitions({ skipInitialTransition: true })),
     provideHttpClient(withInterceptors([authInterceptor])),
     { provide: MAT_ICON_DEFAULT_OPTIONS, useValue: { fontSet: 'material-symbols-outlined' } },
   ]

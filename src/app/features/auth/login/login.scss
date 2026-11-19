@@ -104,6 +104,8 @@ h2 { font-family: var(--serif); font-weight: 600; font-size: 2rem; margin: 10px 
 .sub { color: var(--tinta-2); margin: 0 0 28px; }
 .campo { margin-bottom: 16px; }
 .boton { width: 100%; margin-top: 8px; }
+.error { color: #b42318; background: #fef3f2; border-radius: 10px; padding: 10px 12px; font-size: .9rem; margin: 0 0 8px; }
+.boton:disabled { opacity: .7; cursor: wait; }
 .volver { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; color: var(--tinta-2); font-size: .9rem; }
 mat-icon { font-size: 18px; width: 18px; height: 18px; }
 

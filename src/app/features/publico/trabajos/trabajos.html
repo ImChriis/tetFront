@@ -3,77 +3,137 @@
     <span class="eyebrow anim"><mat-icon>school</mat-icon> Repositorio UJGH</span>
     <h1 class="anim anim-2">Encuentra la <em>investigación</em> que necesitas.</h1>
     <p class="lead-text anim anim-3">Busca por tema, autor, tutor o palabra clave entre los trabajos de grado de nuestras tres facultades.</p>
-    <div class="stats anim anim-4">
-      <div><strong>23</strong><span>trabajos publicados</span></div>
-      <div><strong>3</strong><span>facultades</span></div>
-      <div><strong>11</strong><span>carreras</span></div>
-      <div><strong>2004</strong><span>primer registro</span></div>
-    </div>
+    @if (estadisticas.value(); as e) {
+      <div class="stats anim anim-4">
+        <div><strong>{{ e.trabajos }}</strong><span>trabajos publicados</span></div>
+        <div><strong>{{ e.facultades }}</strong><span>facultades</span></div>
+        <div><strong>{{ e.carreras }}</strong><span>carreras</span></div>
+        @if (e.primer_anio) {
+          <div><strong>{{ e.primer_anio }}</strong><span>primer registro</span></div>
+        }
+      </div>
+    }
   </div>
 </section>
 
 <main class="wrap">
-  <form class="buscador" role="search" (submit)="$event.preventDefault()">
+  <form class="buscador" role="search" #form (submit)="$event.preventDefault(); buscar(form)">
     <div class="buscador-principal">
       <mat-icon>search</mat-icon>
-      <input type="search" placeholder="Ej. liderazgo, redes, educación inicial…" aria-label="Buscar">
+      <input type="search" name="q" #q [value]="filtros().q" (input)="escribir(q.value)" placeholder="Título, autor, tutor o palabra clave…" aria-label="Buscar">
       <button class="boton boton-oro"><mat-icon>arrow_forward</mat-icon> <span>Buscar</span></button>
     </div>
-    <details class="filtros">
+    <details class="filtros" [open]="!!(filtros().anio || filtros().facultad || filtros().carrera_id)">
       <summary><mat-icon>tune</mat-icon> Filtros avanzados <mat-icon class="chevron">expand_more</mat-icon></summary>
       <div class="filtros-grid">
-        <div class="campo"><label for="f-anio">Año</label><select id="f-anio"><option>Todos</option><option>2024</option><option>2023</option></select></div>
-        <div class="campo"><label for="f-facultad">Facultad</label><select id="f-facultad"><option>Todas</option><option>FACES</option><option>FHAE</option><option>FING</option></select></div>
-        <div class="campo"><label for="f-carrera">Carrera</label><select id="f-carrera"><option>Todas</option></select></div>
-        <div class="campo"><label for="f-titulo">Título contiene</label><input id="f-titulo" type="text"></div>
+        <div class="campo">
+          <label for="f-anio">Año</label>
+          <select id="f-anio" name="anio" (change)="buscar(form)">
+            <option value="">Todos</option>
+            @for (anio of estadisticas.value()?.anios; track anio) {
+              <option [value]="anio" [selected]="filtros().anio === '' + anio">{{ anio }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label for="f-facultad">Facultad</label>
+          <select id="f-facultad" name="facultad" (change)="buscar(form)">
+            <option value="">Todas</option>
+            @for (f of facultades.value(); track f.id) {
+              <option [value]="f.siglas" [selected]="filtros().facultad === f.siglas">{{ f.siglas }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label for="f-carrera">Carrera</label>
+          <select id="f-carrera" name="carrera_id" (change)="buscar(form)">
+            <option value="">Todas</option>
+            @for (c of carrerasFiltradas(); track c.id) {
+              <option [value]="c.id" [selected]="filtros().carrera_id === '' + c.id">{{ c.carrera }}</option>
+            }
+          </select>
+        </div>
       </div>
     </details>
   </form>
 
   <div class="atajos">
     <span>Explorar por facultad:</span>
-    @for (fac of facultades; track fac) {
-      <a class="chip chip-fac" [style.--c]="colores[fac]" href="#">{{ fac }}</a>
+    @for (f of facultades.value(); track f.id) {
+      <button type="button" class="chip chip-fac" [style.--c]="color(f.siglas)" (click)="navegar({ facultad: f.siglas, carrera_id: '' })">{{ f.siglas }}</button>
     }
   </div>
 
   <section class="resultados">
-    <div class="resultados-cabecera">
-      <div>
-        <h2>Trabajos más recientes</h2>
-        <p>{{ trabajos.length }} trabajos encontrados</p>
+    @if (resultado.error()) {
+      <div class="vacio">
+        <mat-icon>cloud_off</mat-icon>
+        <h3>No se pudo conectar con el repositorio</h3>
+        <p>Intenta de nuevo en unos minutos.</p>
+        <button type="button" class="boton boton-suave boton-sm" (click)="resultado.reload()">Reintentar</button>
       </div>
-    </div>
+    } @else if (resultado.value(); as r) {
+      <div class="resultados-cabecera">
+        <div>
+          <h2>{{ filtros().q || filtros().anio || filtros().facultad || filtros().carrera_id ? 'Resultados' : 'Trabajos más recientes' }}</h2>
+          <p>{{ r.total }} {{ r.total === 1 ? 'trabajo encontrado' : 'trabajos encontrados' }}</p>
+        </div>
+        @if (filtros().q || filtros().anio || filtros().facultad || filtros().carrera_id) {
+          <button type="button" class="enlace" (click)="limpiar()">Limpiar filtros</button>
+        }
+      </div>
 
-    <div class="grid-tarjetas">
-      @for (t of trabajos; track t.titulo; let i = $index) {
-        <article class="tarjeta" [style.--c]="colores[t.siglas]" [style.--i]="i">
-          <div class="tarjeta-top"><span class="anio">{{ t.anio }}</span><span class="chip chip-fac">{{ t.siglas }}</span></div>
-          <h3>{{ t.titulo }}</h3>
-          <p class="carrera">{{ t.carrera }}</p>
-          <p class="persona"><mat-icon>edit</mat-icon><span><b>Autor:</b> {{ t.autores }}</span></p>
-          <p class="persona"><mat-icon>co_present</mat-icon><span><b>Tutor:</b> {{ t.tutores }}</span></p>
-          <div class="chips">
-            @for (p of t.palabras; track p) { <a class="chip" href="#">#{{ p }}</a> }
-          </div>
-          <div class="tarjeta-pie">
-            <button type="button" class="boton boton-azul boton-sm" (click)="abrirFicha(t)"><mat-icon>visibility</mat-icon> Ver ficha</button>
-            <a href="#" class="boton boton-suave boton-sm"><mat-icon>picture_as_pdf</mat-icon> PDF</a>
-          </div>
-        </article>
+      @if (r.data.length) {
+        <div class="grid-tarjetas" [class.cargando]="resultado.isLoading()">
+          @for (t of r.data; track t.id; let i = $index) {
+            <article class="tarjeta" [style.--c]="color(t.siglas)" [style.--i]="i">
+              <div class="tarjeta-top"><span class="anio">{{ t.anio }}</span><span class="chip chip-fac">{{ t.siglas }}</span></div>
+              <h3>{{ t.titulo }}</h3>
+              <p class="carrera">{{ t.carrera }}</p>
+              <p class="persona"><mat-icon>edit</mat-icon><span><b>Autor:</b> {{ t.autores }}</span></p>
+              <p class="persona"><mat-icon>co_present</mat-icon><span><b>Tutor:</b> {{ t.tutores }}</span></p>
+              <div class="chips">
+                @for (p of palabras(t); track p) {
+                  <button type="button" class="chip" (click)="navegar({ q: p })">#{{ p }}</button>
+                }
+              </div>
+              <div class="tarjeta-pie">
+                <button type="button" class="boton boton-azul boton-sm" (click)="abrirFicha(t)"><mat-icon>visibility</mat-icon> Ver ficha</button>
+                @if (t.tiene_tesis) {
+                  <button type="button" class="boton boton-suave boton-sm" (click)="verPdf(t, 'tesis')"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+
+        @if (paginas().length > 1) {
+          <nav class="paginacion" aria-label="Paginación">
+            @for (n of paginas(); track n) {
+              @if (n === r.page) {
+                <span class="actual" aria-current="page">{{ n }}</span>
+              } @else {
+                <button type="button" (click)="navegar({ page: n })">{{ n }}</button>
+              }
+            }
+          </nav>
+        }
+      } @else {
+        <div class="vacio">
+          <mat-icon>search_off</mat-icon>
+          <h3>Sin resultados</h3>
+          <p>Prueba con otras palabras o quita algún filtro.</p>
+        </div>
       }
-    </div>
-
-    <nav class="paginacion">
-      <span class="actual">1</span><a href="#">2</a><a href="#">3</a>
-      <a href="#" aria-label="Siguiente"><mat-icon>chevron_right</mat-icon></a>
-    </nav>
+    } @else {
+      <p class="cargando-texto">Cargando trabajos…</p>
+    }
   </section>
 </main>
 
 <dialog class="ficha" #ficha (click)="$event.target === ficha && cerrarFicha()">
   @if (seleccionado(); as t) {
-    <div class="ficha-cabecera" [style.--c]="colores[t.siglas]">
+    <div class="ficha-cabecera" [style.--c]="color(t.siglas)">
       <span class="eyebrow">{{ t.siglas }} · {{ t.anio }}</span>
       <h3>{{ t.titulo }}</h3>
       <button class="cerrar" aria-label="Cerrar" (click)="cerrarFicha()"><mat-icon>close</mat-icon></button>
@@ -86,15 +146,27 @@
           <dt>Autores</dt><dd>{{ t.autores }}</dd>
           <dt>Tutores</dt><dd>{{ t.tutores }}</dd>
           <dt>Palabras clave</dt>
-          <dd class="chips">@for (p of t.palabras; track p) { <a class="chip" href="#">#{{ p }}</a> }</dd>
+          <dd class="chips">
+            @for (p of palabras(t); track p) {
+              <button type="button" class="chip" (click)="cerrarFicha(); navegar({ q: p })">#{{ p }}</button>
+            }
+          </dd>
         </dl>
         <div class="ficha-acciones">
-          <a href="#" class="boton boton-suave boton-sm"><mat-icon>description</mat-icon> Abrir resumen</a>
-          <a href="#" class="boton boton-azul boton-sm"><mat-icon>picture_as_pdf</mat-icon> Trabajo completo</a>
+          @if (t.tiene_resumen) {
+            <button type="button" class="boton boton-suave boton-sm" (click)="verPdf(t, 'resumen')"><mat-icon>description</mat-icon> Abrir resumen</button>
+          }
+          @if (t.tiene_tesis) {
+            <button type="button" class="boton boton-azul boton-sm" (click)="verPdf(t, 'tesis')"><mat-icon>picture_as_pdf</mat-icon> Trabajo completo</button>
+          }
         </div>
       </div>
       <div class="ficha-vista">
-        <p><mat-icon class="grande">picture_as_pdf</mat-icon>Aquí se muestra la vista previa del resumen (PDF)</p>
+        @if (t.tiene_tesis && !portadaFallida()) {
+          <img [src]="api.urlPortada(t.id)" [alt]="'Portada de ' + t.titulo" (error)="portadaFallida.set(true)">
+        } @else {
+          <p><mat-icon class="grande">image_not_supported</mat-icon>Portada no disponible</p>
+        }
       </div>
     </div>
   }

@@ -16,7 +16,7 @@
   </div>
 
   <div class="acceso-form">
-    <form (submit)="$event.preventDefault()">
+    <form #form (submit)="$event.preventDefault(); ingresar(form)">
       <span class="eyebrow"><mat-icon>admin_panel_settings</mat-icon> Acceso administrativo</span>
       <h2>Iniciar sesión</h2>
       <p class="sub">Para decanos y personal autorizado.</p>
@@ -30,7 +30,13 @@
         <input type="password" id="contrasena" name="contrasena" autocomplete="current-password" required>
       </div>
 
-      <button type="submit" class="boton boton-azul">Ingresar <mat-icon>arrow_forward</mat-icon></button>
+      @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
+      }
+
+      <button type="submit" class="boton boton-azul" [disabled]="enviando()">
+        {{ enviando() ? 'Ingresando…' : 'Ingresar' }} <mat-icon>arrow_forward</mat-icon>
+      </button>
       <a class="volver" routerLink="/trabajos"><mat-icon>arrow_back</mat-icon> Volver al buscador</a>
     </form>
   </div>

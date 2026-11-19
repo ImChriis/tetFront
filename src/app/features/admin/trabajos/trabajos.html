@@ -1,0 +1,103 @@
+<header class="cabecera">
+  <div>
+    <h1>Trabajos</h1>
+    <p>{{ usuario()?.es_admin ? 'Todos los trabajos especiales de grado del repositorio.' : 'Trabajos de tu facultad.' }}</p>
+  </div>
+  <button mat-flat-button (click)="abrir()"><mat-icon>add</mat-icon> Nuevo trabajo</button>
+</header>
+
+<section class="panel">
+  <div class="filtros">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busqueda">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Buscar por título, autor, tutor o palabra clave</mat-label>
+      <input matInput #texto (input)="escribir(texto.value)" (keyup.enter)="buscar(texto.value)" type="search">
+    </mat-form-field>
+    @if (usuario()?.es_admin) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Facultad</mat-label>
+        <mat-select [value]="facultadId()" (selectionChange)="filtrarFacultad($event.value)">
+          <mat-option [value]="undefined">Todas</mat-option>
+          @for (f of facultades.value(); track f.id) {
+            <mat-option [value]="f.id">{{ f.siglas }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
+
+  @if (resultado.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (resultado.error()) {
+    <p class="aviso">No se pudo cargar la lista. <button mat-button (click)="resultado.reload()">Reintentar</button></p>
+  } @else {
+    <div class="tabla">
+      <table mat-table [dataSource]="trabajos()">
+        <ng-container matColumnDef="anio">
+          <th mat-header-cell *matHeaderCellDef>Año</th>
+          <td mat-cell *matCellDef="let t" class="anio">{{ t.anio }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="titulo">
+          <th mat-header-cell *matHeaderCellDef>Título</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="titulo">{{ t.titulo }}</span>
+            <small>{{ t.autores }} · Tutor: {{ t.tutores }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="carrera">
+          <th mat-header-cell *matHeaderCellDef>Carrera</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="facultad" [attr.data-fac]="t.siglas">{{ t.siglas }}</span>
+            <small>{{ t.carrera }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="archivos">
+          <th mat-header-cell *matHeaderCellDef>PDF</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="pdfs">
+              @if (t.tiene_resumen) {
+                <button type="button" class="pdf ok" (click)="verPdf(t, 'resumen')" matTooltip="Ver resumen" aria-label="Ver resumen">R</button>
+              } @else {
+                <span class="pdf falta" matTooltip="Falta el resumen">R</span>
+              }
+              @if (t.tiene_tesis) {
+                <button type="button" class="pdf ok" (click)="verPdf(t, 'tesis')" matTooltip="Ver trabajo completo" aria-label="Ver trabajo completo">T</button>
+              } @else {
+                <span class="pdf falta" matTooltip="Falta el trabajo completo">T</span>
+              }
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef><span class="sr-only">Acciones</span></th>
+          <td mat-cell *matCellDef="let t" class="acciones">
+            <button mat-icon-button (click)="abrir(t)" matTooltip="Editar" [attr.aria-label]="'Editar ' + t.titulo"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button (click)="eliminar(t)" matTooltip="Eliminar" [attr.aria-label]="'Eliminar ' + t.titulo"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="vacio" [attr.colspan]="columnas.length">
+            {{ resultado.isLoading() ? 'Cargando…' : 'No hay trabajos que coincidan.' }}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="resultado.value()?.total ?? 0"
+      [pageIndex]="pagina().page - 1"
+      [pageSize]="pagina().limit"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="paginar($event)"
+      aria-label="Paginación de trabajos" />
+  }
+</section>
