@@ -91,7 +91,7 @@
               <h3>{{ t.titulo }}</h3>
               <p class="carrera">{{ t.carrera }}</p>
               <p class="persona"><mat-icon>edit</mat-icon><span><b>Autor:</b> {{ t.autores }}</span></p>
-              <p class="persona"><mat-icon>co_present</mat-icon><span><b>Tutor:</b> {{ t.tutores }}</span></p>
+              <p class="persona"><mat-icon>co_present</mat-icon><span><b>{{ t.tutores.includes(',') ? 'Tutores' : 'Tutor' }}:</b> {{ t.tutores }}</span></p>
               <div class="chips">
                 @for (p of palabras(t); track p) {
                   <button type="button" class="chip" (click)="navegar({ q: p })">#{{ p }}</button>

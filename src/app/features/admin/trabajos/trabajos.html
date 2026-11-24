@@ -44,7 +44,7 @@
           <th mat-header-cell *matHeaderCellDef>Título</th>
           <td mat-cell *matCellDef="let t">
             <span class="titulo">{{ t.titulo }}</span>
-            <small>{{ t.autores }} · Tutor: {{ t.tutores }}</small>
+            <small>{{ t.autores }} · {{ t.tutores.includes(',') ? 'Tutores' : 'Tutor' }}: {{ t.tutores }}</small>
           </td>
         </ng-container>
 

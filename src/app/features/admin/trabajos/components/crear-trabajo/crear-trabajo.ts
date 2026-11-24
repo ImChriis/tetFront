@@ -15,10 +15,10 @@ import { Auth } from '../../../../../core/services/auth';
 import { mensajeError } from '../../../../../core/api';
 
 const MAX_PDF = 20 * 1024 * 1024;
-const MAX_AUTORES = 10;
 // 12345678, 12.345.678 o V-12345678 (el backend normaliza puntos y espacios)
 const CEDULA = /^([VvEe]-?)?(\d[.\s]?){5,9}\d$/;
 type TipoPdf = 'resumen' | 'tesis';
+type Campo = 'autores' | 'tutores';
 
 /** Crea un trabajo (sin id) o edita uno existente (con id) */
 @Component({
@@ -37,11 +37,15 @@ export class CrearTrabajo {
   protected readonly tipos = ['resumen', 'tesis'] as const;
   protected readonly anioMax = new Date().getFullYear() + 1;
   private readonly fb = inject(NonNullableFormBuilder);
-  protected readonly maxAutores = MAX_AUTORES;
+  // Mismos límites que MAX_PERSONAS del backend
+  protected readonly personas = [
+    { campo: 'autores', singular: 'autor', titulo: 'Autores', max: 10 },
+    { campo: 'tutores', singular: 'tutor', titulo: 'Tutores', max: 5 },
+  ] as const;
   protected readonly form = this.fb.group({
     titulo: ['', [Validators.required, Validators.maxLength(255)]],
     autores: this.fb.array([this.nuevaPersona()], Validators.minLength(1)),
-    tutor: this.nuevaPersona(),
+    tutores: this.fb.array([this.nuevaPersona()], Validators.minLength(1)),
     palabras_claves: ['', [Validators.required, Validators.maxLength(140)]],
     anio: [new Date().getFullYear(), [Validators.required, Validators.min(1901), Validators.max(this.anioMax)]],
     carrera_id: [null as number | null, Validators.required],
@@ -81,11 +85,9 @@ export class CrearTrabajo {
       if (!t) return;
       const { autores, tutores, ...resto } = t;
       this.form.patchValue({ ...resto, lineas: t.lineas?.map((l) => l.id) ?? [] });
-      // Los trabajos viejos solo tienen el texto de autores y tutor: se pone como nombre para completarlo
-      const lista = t.autores_detalle?.length ? t.autores_detalle : [{ nombre: autores, apellido: '', cedula: '' }];
-      this.form.controls.autores.clear();
-      lista.forEach((a) => this.form.controls.autores.push(this.nuevaPersona(a)));
-      this.form.controls.tutor.setValue(t.tutor_detalle ?? { nombre: tutores, apellido: '', cedula: '' });
+      // Los trabajos viejos solo tienen el texto de autores y tutores: se pone como nombre para completarlo
+      this.llenar('autores', t.autores_detalle, autores);
+      this.llenar('tutores', t.tutores_detalle, tutores);
       this.form.markAllAsTouched();
       this.actuales.set({ resumen: t.tiene_resumen, tesis: t.tiene_tesis });
       this.form.enable();
@@ -100,12 +102,18 @@ export class CrearTrabajo {
     });
   }
 
-  agregarAutor() {
-    this.form.controls.autores.push(this.nuevaPersona());
+  private llenar(campo: Campo, detalle: Persona[] | undefined, texto: string) {
+    const lista = detalle?.length ? detalle : [{ nombre: texto, apellido: '', cedula: '' }];
+    this.form.controls[campo].clear();
+    lista.forEach((p) => this.form.controls[campo].push(this.nuevaPersona(p)));
   }
 
-  quitarAutor(i: number) {
-    this.form.controls.autores.removeAt(i);
+  agregar(campo: Campo) {
+    this.form.controls[campo].push(this.nuevaPersona());
+  }
+
+  quitar(campo: Campo, i: number) {
+    this.form.controls[campo].removeAt(i);
   }
 
   elegirArchivo(tipo: TipoPdf, input: HTMLInputElement) {
@@ -124,11 +132,11 @@ export class CrearTrabajo {
       this.form.markAllAsTouched();
       return;
     }
-    const { lineas, autores, tutor, ...campos } = this.form.getRawValue();
+    const { lineas, autores, tutores, ...campos } = this.form.getRawValue();
     const datos = new FormData();
     Object.entries(campos).forEach(([k, v]) => datos.append(k, String(v)));
     datos.append('autores', JSON.stringify(autores));
-    Object.entries(tutor).forEach(([k, v]) => datos.append(`tutor_${k}`, v));
+    datos.append('tutores', JSON.stringify(tutores));
     lineas.forEach((l) => datos.append('lineas[]', String(l)));
     (['resumen', 'tesis'] as const).forEach((tipo) => {
       const archivo = this.archivos()[tipo];

@@ -37,7 +37,6 @@ form {
   font: 600 .75rem var(--sans);
 }
 
-.autor.tutor { grid-template-columns: 1fr 1fr 150px; }
 .autor button { margin-top: 4px; }
 .agregar { margin: 2px 0 4px; }
 
@@ -73,6 +72,5 @@ mat-option small { color: var(--tinta-2); }
 @media (max-width: 600px) {
   form { grid-template-columns: 1fr; }
   .autor { grid-template-columns: 1fr 1fr 40px; }
-  .autor.tutor { grid-template-columns: 1fr 1fr; }
   .numero { display: none; }
 }

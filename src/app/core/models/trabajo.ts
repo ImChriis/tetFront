@@ -24,8 +24,7 @@ export interface Trabajo {
   lineas?: LineaInvestigacion[];
   /** Solo llega al panel, para quien puede editar el trabajo */
   autores_detalle?: Persona[];
-  /** null en trabajos viejos que solo tienen el texto del tutor */
-  tutor_detalle?: Persona | null;
+  tutores_detalle?: Persona[];
 }
 
 export interface FiltrosTrabajos {
