@@ -59,7 +59,18 @@ export class CrearTrabajo {
 
   private readonly facultades = rxResource({ stream: () => this.catalogos.listar('facultades'), defaultValue: [] });
   private readonly carreras = rxResource({ stream: () => this.catalogos.listar('carreras'), defaultValue: [] });
-  protected readonly lineas = rxResource({ stream: () => this.catalogos.listar('lineas'), defaultValue: [] });
+  private readonly matrices = rxResource({ stream: () => this.catalogos.listar('matrices'), defaultValue: [] });
+  private readonly potenciales = rxResource({ stream: () => this.catalogos.listar('potenciales'), defaultValue: [] });
+  private readonly operativas = rxResource({ stream: () => this.catalogos.listar('operativas'), defaultValue: [] });
+
+  // Las líneas operativas se agrupan por su línea potencial (y matriz) para encontrarlas
+  protected readonly gruposLineas = computed(() => {
+    const matriz = new Map(this.matrices.value().map((m) => [m.id, m.nombre]));
+    return this.potenciales
+      .value()
+      .map((p) => ({ id: p.id, etiqueta: `${matriz.get(p.matriz_id)} › ${p.nombre}`, operativas: this.operativas.value().filter((o) => o.potencial_id === p.id) }))
+      .filter((g) => g.operativas.length);
+  });
 
   // Un decano solo puede elegir carreras de su facultad
   protected readonly grupos = computed(() => {

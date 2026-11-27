@@ -1,17 +1,52 @@
-<h2 mat-dialog-title>{{ linea ? 'Editar línea de investigación' : 'Nueva línea de investigación' }}</h2>
+<h2 mat-dialog-title>{{ datos.registro ? 'Editar' : 'Nueva' }} {{ info.singular }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" id="form-linea" (ngSubmit)="guardar()">
+    @if (nivel >= 1) {
+      <mat-form-field>
+        <mat-label>Línea matriz</mat-label>
+        <mat-select formControlName="matriz_id" (selectionChange)="elegirMatriz()">
+          @for (m of datos.matrices; track m.id) {
+            <mat-option [value]="m.id">{{ m.nombre }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.matriz_id.invalid) { <mat-error>Elige la línea matriz</mat-error> }
+      </mat-form-field>
+    }
+
+    @if (usaAmbito()) {
+      <mat-form-field>
+        <mat-label>Ámbito</mat-label>
+        <mat-select formControlName="ambito_id" (selectionChange)="elegirAmbito()">
+          @for (a of ambitos(); track a.id) {
+            <mat-option [value]="a.id">{{ a.nombre }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.ambito_id.invalid) { <mat-error>Elige el ámbito</mat-error> }
+      </mat-form-field>
+    } @else if (nivel >= 2 && form.controls.matriz_id.value) {
+      <p class="nota">Esta línea matriz no tiene ámbitos.</p>
+    }
+
+    @if (nivel >= 3) {
+      <mat-form-field>
+        <mat-label>Línea potencial</mat-label>
+        <mat-select formControlName="potencial_id">
+          @for (p of potenciales(); track p.id) {
+            <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+          } @empty {
+            <mat-option disabled>{{ form.controls.matriz_id.value ? 'No hay líneas potenciales aquí' : 'Elige primero la línea matriz' }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.potencial_id.invalid) { <mat-error>Elige la línea potencial</mat-error> }
+      </mat-form-field>
+    }
+
     <mat-form-field>
-      <mat-label>Nombre de la línea</mat-label>
-      <input matInput formControlName="nombre_linea" cdkFocusInitial>
-      @if (form.controls.nombre_linea.invalid) { <mat-error>Obligatorio, máximo 255 caracteres</mat-error> }
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Eje temático</mat-label>
-      <input matInput formControlName="eje_tematico">
-      <mat-hint>Ej.: Tecnología e innovación, Gestión organizacional</mat-hint>
-      @if (form.controls.eje_tematico.invalid) { <mat-error>Obligatorio, máximo 255 caracteres</mat-error> }
+      <mat-label>{{ info.columna }}</mat-label>
+      <input matInput formControlName="nombre" cdkFocusInitial>
+      <mat-hint align="end">{{ form.controls.nombre.value.length }}/{{ info.max }}</mat-hint>
+      @if (form.controls.nombre.invalid) { <mat-error>Obligatorio, máximo {{ info.max }} caracteres</mat-error> }
     </mat-form-field>
   </form>
   @if (error()) {
@@ -22,6 +57,6 @@
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close [disabled]="guardando()">Cancelar</button>
   <button mat-flat-button type="submit" form="form-linea" [disabled]="guardando()">
-    {{ guardando() ? 'Guardando…' : linea ? 'Guardar cambios' : 'Crear línea' }}
+    {{ guardando() ? 'Guardando…' : datos.registro ? 'Guardar cambios' : 'Crear' }}
   </button>
 </mat-dialog-actions>

@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSlideToggle, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TrabajosApi } from '../../../core/services/trabajos';
@@ -18,11 +19,12 @@ import { mensajeError } from '../../../core/api';
 import { Trabajo } from '../../../core/models/trabajo';
 import { PaginadorEs } from '../../../core/paginador-es';
 import { CrearTrabajo } from './components/crear-trabajo/crear-trabajo';
+import { VistaPrevia, confirmarPublicacion } from './components/vista-previa/vista-previa';
 import { Confirmar, DatosConfirmar } from '../components/confirmar/confirmar';
 import { VisorPdf } from '../../../shared/components/visor-pdf/visor-pdf';
 
 @Component({
-  imports: [MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressBarModule],
+  imports: [MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressBarModule, MatSlideToggleModule],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginadorEs }],
   selector: 'app-trabajos-admin',
   styleUrl: './trabajos.scss',
@@ -34,7 +36,7 @@ export class TrabajosAdmin {
   private readonly snack = inject(MatSnackBar);
   protected readonly usuario = inject(Auth).usuario;
 
-  protected readonly columnas = ['anio', 'titulo', 'carrera', 'archivos', 'acciones'];
+  protected readonly columnas = ['anio', 'titulo', 'carrera', 'archivos', 'estado', 'acciones'];
   protected readonly q = signal('');
   protected readonly facultadId = signal<number | undefined>(this.usuario()?.facultad_id ?? undefined);
   protected readonly pagina = signal({ page: 1, limit: 10 });
@@ -44,7 +46,7 @@ export class TrabajosAdmin {
 
   // Un decano siempre ve solo su facultad (el backend igual valida los permisos)
   protected readonly resultado = rxResource({
-    params: () => ({ q: this.q(), facultad_id: this.facultadId(), ...this.pagina() }),
+    params: () => ({ q: this.q(), facultad_id: this.facultadId(), panel: 1, ...this.pagina() }),
     stream: ({ params }) => this.api.listar(params),
   });
 
@@ -88,6 +90,32 @@ export class TrabajosAdmin {
 
   verPdf(t: Trabajo, tipo: 'resumen' | 'tesis') {
     VisorPdf.abrir(this.dialog, { url: this.api.urlArchivo(t.id, tipo), titulo: t.titulo, subtitulo: tipo === 'resumen' ? 'Resumen' : 'Trabajo completo' });
+  }
+
+  vistaPrevia(t: Trabajo) {
+    this.dialog
+      .open(VistaPrevia, { data: { id: t.id }, width: '900px', maxWidth: '95vw', autoFocus: 'dialog' })
+      .afterClosed()
+      .subscribe(() => this.resultado.reload());
+  }
+
+  publicar(t: Trabajo, publicado: boolean, interruptor: MatSlideToggle) {
+    // El interruptor ya cambió al hacer clic: vuelve atrás hasta que se confirme y guarde
+    interruptor.checked = !publicado;
+    confirmarPublicacion(this.dialog, t, publicado).subscribe(() => this.cambiarPublicado(t, publicado));
+  }
+
+  private cambiarPublicado(t: Trabajo, publicado: boolean) {
+    this.api.publicar(t.id, publicado).subscribe({
+      next: () => {
+        this.snack.open(publicado ? 'Trabajo publicado' : 'Trabajo retirado del sitio público', 'OK', { duration: 3000 });
+        this.resultado.reload();
+      },
+      error: (e) => {
+        this.snack.open(mensajeError(e), 'Cerrar', { duration: 5000 });
+        this.resultado.reload();
+      },
+    });
   }
 
   eliminar(trabajo: Trabajo) {

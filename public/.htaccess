@@ -1,0 +1,6 @@
+# Rutas de Angular (/trabajos, /admin, ...): si no es un archivo o carpeta real, se sirve index.html
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^ index.html [L]

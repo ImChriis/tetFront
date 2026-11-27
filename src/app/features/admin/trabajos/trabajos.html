@@ -74,9 +74,23 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Publicado</th>
+          <td mat-cell *matCellDef="let t">
+            <!-- Para publicar debe estar completo; retirarlo siempre se puede -->
+            <span [matTooltip]="!t.publicado && t.faltantes.length ? 'Falta: ' + t.faltantes.join(', ') : ''">
+              <mat-slide-toggle [checked]="t.publicado" [disabled]="!t.publicado && t.faltantes.length > 0"
+                                (change)="publicar(t, $event.checked, $event.source)" [attr.aria-label]="'Publicar ' + t.titulo">
+                <span class="estado" [class.si]="t.publicado">{{ t.publicado ? 'Sí' : 'No' }}</span>
+              </mat-slide-toggle>
+            </span>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef><span class="sr-only">Acciones</span></th>
           <td mat-cell *matCellDef="let t" class="acciones">
+            <button mat-icon-button (click)="vistaPrevia(t)" matTooltip="Vista previa" [attr.aria-label]="'Vista previa de ' + t.titulo"><mat-icon>visibility</mat-icon></button>
             <button mat-icon-button (click)="abrir(t)" matTooltip="Editar" [attr.aria-label]="'Editar ' + t.titulo"><mat-icon>edit</mat-icon></button>
             <button mat-icon-button (click)="eliminar(t)" matTooltip="Eliminar" [attr.aria-label]="'Eliminar ' + t.titulo"><mat-icon>delete</mat-icon></button>
           </td>

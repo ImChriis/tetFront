@@ -1,4 +1,11 @@
-import { LineaInvestigacion } from './catalogos';
+/** Línea operativa de un trabajo, con los nombres de sus niveles superiores */
+export interface LineaTrabajo {
+  id: number;
+  nombre: string;
+  potencial: string;
+  ambito: string | null;
+  matriz: string;
+}
 
 /** Autor o tutor */
 export interface Persona {
@@ -21,7 +28,12 @@ export interface Trabajo {
   facultad: string;
   tiene_resumen: boolean;
   tiene_tesis: boolean;
-  lineas?: LineaInvestigacion[];
+  tiene_autores: boolean;
+  tiene_tutores: boolean;
+  publicado: boolean;
+  /** Lo que falta para poder publicarlo; vacío si está completo */
+  faltantes: string[];
+  lineas?: LineaTrabajo[];
   /** Solo llega al panel, para quien puede editar el trabajo */
   autores_detalle?: Persona[];
   tutores_detalle?: Persona[];
@@ -33,6 +45,8 @@ export interface FiltrosTrabajos {
   facultad?: string;
   facultad_id?: number;
   carrera_id?: string;
+  /** 1 = incluir no publicados (solo panel) */
+  panel?: number;
   page?: number;
   limit?: number;
 }

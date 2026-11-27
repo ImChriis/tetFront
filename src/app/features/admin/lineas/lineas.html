@@ -1,60 +1,87 @@
 <header class="cabecera">
   <div>
     <h1>Líneas de investigación</h1>
-    <p>Las líneas se asignan a los trabajos al crearlos o editarlos.</p>
+    <p>Línea matriz → ámbito → línea potencial → línea operativa. A los trabajos se les asignan líneas operativas.</p>
   </div>
-  <button mat-flat-button (click)="abrir()"><mat-icon>add</mat-icon> Nueva línea</button>
+  <button mat-flat-button (click)="abrir()"><mat-icon>add</mat-icon> Nueva {{ info().singular }}</button>
 </header>
+
+<mat-button-toggle-group class="niveles" [value]="nivel()" (change)="cambiarNivel($event.value)" aria-label="Nivel de línea" hideSingleSelectionIndicator>
+  @for (n of niveles; track n.tipo; let i = $index) {
+    <mat-button-toggle [value]="n.tipo">
+      <span class="paso">{{ i + 1 }}</span> {{ n.titulo }} <span class="cuenta">{{ totales()[n.tipo] }}</span>
+    </mat-button-toggle>
+  }
+</mat-button-toggle-group>
 
 <section class="panel">
   <div class="filtros">
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busqueda">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Filtrar por nombre o eje temático</mat-label>
-      <input matInput (input)="filtro.set($any($event.target).value)" type="search">
+      <mat-label>Filtrar {{ info().titulo.toLowerCase() }}</mat-label>
+      <input matInput #texto [value]="filtro()" (input)="filtrar(texto.value)" type="search">
     </mat-form-field>
   </div>
 
-  @if (lineas.isLoading()) {
+  @if (cargando()) {
     <mat-progress-bar mode="indeterminate" />
   }
 
   <div class="tabla">
-    <table mat-table [dataSource]="filtradas()">
-      <ng-container matColumnDef="nombre_linea">
-        <th mat-header-cell *matHeaderCellDef>Línea</th>
-        <td mat-cell *matCellDef="let l" class="nombre">{{ l.nombre_linea }}</td>
+    <table mat-table [dataSource]="visibles()">
+      <ng-container matColumnDef="matriz">
+        <th mat-header-cell *matHeaderCellDef>Línea matriz</th>
+        <td mat-cell *matCellDef="let f" class="secundario">{{ f.matriz }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="eje_tematico">
-        <th mat-header-cell *matHeaderCellDef>Eje temático</th>
-        <td mat-cell *matCellDef="let l"><span class="eje">{{ l.eje_tematico }}</span></td>
+      <ng-container matColumnDef="ambito">
+        <th mat-header-cell *matHeaderCellDef>Ámbito</th>
+        <td mat-cell *matCellDef="let f"><span class="ambito">{{ f.ambito }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="potencial">
+        <th mat-header-cell *matHeaderCellDef>Línea potencial</th>
+        <td mat-cell *matCellDef="let f" class="secundario">{{ f.potencial }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>{{ info().columna }}</th>
+        <td mat-cell *matCellDef="let f" class="nombre">{{ f.nombre }}</td>
       </ng-container>
 
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef><span class="sr-only">Acciones</span></th>
-        <td mat-cell *matCellDef="let l" class="acciones">
-          <button mat-icon-button (click)="abrir(l)" matTooltip="Editar" [attr.aria-label]="'Editar ' + l.nombre_linea"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button (click)="eliminar(l)" matTooltip="Eliminar" [attr.aria-label]="'Eliminar ' + l.nombre_linea"><mat-icon>delete</mat-icon></button>
+        <td mat-cell *matCellDef="let f" class="acciones">
+          <button mat-icon-button (click)="abrir(f.registro)" matTooltip="Editar" [attr.aria-label]="'Editar ' + f.nombre"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="eliminar(f)" matTooltip="Eliminar" [attr.aria-label]="'Eliminar ' + f.nombre"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+      <tr mat-header-row *matHeaderRowDef="columnas()"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas()"></tr>
       <tr class="mat-row" *matNoDataRow>
-        <td class="vacio" [attr.colspan]="columnas.length">
-          @if (lineas.error()) {
+        <td class="vacio" [attr.colspan]="columnas().length">
+          @if (error()) {
             No se pudieron cargar las líneas.
           } @else if (filtro()) {
-            Ninguna línea coincide con "{{ filtro() }}".
-          } @else if (!lineas.isLoading()) {
+            Nada coincide con "{{ filtro() }}".
+          } @else if (!cargando()) {
             <mat-icon>hub</mat-icon>
-            <b>Todavía no hay líneas de investigación</b>
-            <span>Crea la primera para empezar a clasificar los trabajos.</span>
-            <button mat-stroked-button (click)="abrir()">Crear línea</button>
+            <b>Todavía no hay {{ info().titulo.toLowerCase() }}</b>
+            <button mat-stroked-button (click)="abrir()">Crear {{ info().singular }}</button>
           }
         </td>
       </tr>
     </table>
   </div>
+
+  @if (filtradas().length > pagina().size) {
+    <mat-paginator
+      [length]="filtradas().length"
+      [pageIndex]="pagina().index"
+      [pageSize]="pagina().size"
+      [pageSizeOptions]="[25, 50, 100]"
+      (page)="paginar($event)"
+      aria-label="Paginación de líneas" />
+  }
 </section>

@@ -8,7 +8,7 @@
 }
 
 h1 { font: 600 1.9rem var(--serif); color: var(--tinta); margin: 0 0 4px; }
-.cabecera p { margin: 0; color: var(--tinta-2); }
+.cabecera p { margin: 0; color: var(--tinta-2); max-width: 640px; }
 
 .panel {
   background: var(--blanco);
@@ -25,15 +25,48 @@ table { width: 100%; }
 
 .nombre { font-weight: 500; color: var(--tinta); }
 
-.eje {
+.secundario { color: var(--tinta-2); font-size: .88rem; }
+
+.ambito {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: var(--azul-100);
   color: var(--azul-800);
-  font-size: .8rem;
+  font-size: .78rem;
   font-weight: 500;
+  white-space: nowrap;
 }
+
+.niveles {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  border-radius: var(--radio);
+  background: var(--blanco);
+}
+
+.niveles mat-button-toggle { flex: 1 1 160px; }
+
+.paso {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--azul-100);
+  color: var(--azul-800);
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.mat-button-toggle-checked .paso { background: var(--azul-800); color: #fff; }
+
+.cuenta { margin-left: 4px; color: var(--tinta-2); font-size: .8rem; }
 
 .acciones { width: 104px; text-align: right; white-space: nowrap; }
 

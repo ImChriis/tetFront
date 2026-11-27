@@ -1,0 +1,79 @@
+@if (trabajo.isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (trabajo.value(); as t) {
+  <div class="estado" [class.publicado]="t.publicado" [class.listo]="!t.publicado && !t.faltantes.length">
+    <mat-icon>{{ t.publicado ? 'public' : t.faltantes.length ? 'edit_note' : 'task_alt' }}</mat-icon>
+    <div class="estado-texto">
+      @if (t.publicado) {
+        <b>Publicado</b>
+        <span>Visible para alumnos y visitantes en el repositorio.</span>
+      } @else if (t.faltantes.length) {
+        <b>Vista previa · no se puede publicar todavía</b>
+        <span>Falta: {{ t.faltantes.join(', ') }}.</span>
+      } @else {
+        <b>Vista previa · listo para publicar</b>
+        <span>Así lo verán los visitantes cuando lo publiques.</span>
+      }
+    </div>
+    @if (t.publicado) {
+      <button mat-stroked-button (click)="publicar(t, false)" [disabled]="guardando()">Despublicar</button>
+    } @else {
+      <button mat-flat-button (click)="publicar(t, true)" [disabled]="guardando() || t.faltantes.length > 0">Publicar</button>
+    }
+  </div>
+
+  <div class="ficha-cabecera" [style.--c]="color(t.siglas)">
+    <span class="eyebrow">{{ t.siglas }} · {{ t.anio }}</span>
+    <h2>{{ t.titulo }}</h2>
+    <button class="cerrar" mat-dialog-close aria-label="Cerrar"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="ficha-cuerpo">
+      <div>
+        <dl>
+          <dt>Facultad</dt><dd>{{ t.facultad }}</dd>
+          <dt>Carrera</dt><dd>{{ t.carrera }}</dd>
+          <dt>Autores</dt><dd>{{ t.autores }}</dd>
+          <dt>Tutores</dt><dd>{{ t.tutores }}</dd>
+          <dt>Palabras clave</dt>
+          <dd class="chips">
+            @for (p of palabras(); track p) { <span class="chip">#{{ p }}</span> }
+          </dd>
+          <dt>Líneas de investigación</dt>
+          @for (l of t.lineas; track l.id) {
+            <dd class="linea">
+              <small>{{ l.matriz }}{{ l.ambito ? ' › ' + l.ambito : '' }} › {{ l.potencial }}</small>
+              {{ l.nombre }}
+            </dd>
+          } @empty {
+            <dd class="vacio">Sin líneas asignadas</dd>
+          }
+        </dl>
+        <div class="acciones">
+          @if (t.tiene_resumen) {
+            <button mat-stroked-button (click)="verPdf(t, 'resumen')"><mat-icon>description</mat-icon> Abrir resumen</button>
+          } @else {
+            <span class="falta"><mat-icon>error_outline</mat-icon> Falta el PDF del resumen</span>
+          }
+          @if (t.tiene_tesis) {
+            <button mat-flat-button (click)="verPdf(t, 'tesis')"><mat-icon>picture_as_pdf</mat-icon> Trabajo completo</button>
+          } @else {
+            <span class="falta"><mat-icon>error_outline</mat-icon> Falta el PDF del trabajo completo</span>
+          }
+        </div>
+      </div>
+      <div class="portada">
+        @if (portada()) {
+          <img [src]="portada()" [alt]="'Portada de ' + t.titulo">
+        } @else if (portadaFallida()) {
+          <p><mat-icon class="grande">image_not_supported</mat-icon>Portada no disponible</p>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+} @else if (trabajo.error()) {
+  <mat-dialog-content><p class="falta">No se pudo cargar el trabajo.</p></mat-dialog-content>
+}

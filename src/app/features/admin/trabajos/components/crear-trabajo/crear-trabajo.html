@@ -78,13 +78,17 @@
     <mat-form-field class="completo">
       <mat-label>Líneas de investigación</mat-label>
       <mat-select formControlName="lineas" multiple>
-        @for (l of lineas.value(); track l.id) {
-          <mat-option [value]="l.id">{{ l.nombre_linea }} <small>· {{ l.eje_tematico }}</small></mat-option>
+        @for (g of gruposLineas(); track g.id) {
+          <mat-optgroup [label]="g.etiqueta">
+            @for (o of g.operativas; track o.id) {
+              <mat-option [value]="o.id">{{ o.nombre }}</mat-option>
+            }
+          </mat-optgroup>
         } @empty {
-          <mat-option disabled>Aún no hay líneas registradas</mat-option>
+          <mat-option disabled>Aún no hay líneas operativas registradas</mat-option>
         }
       </mat-select>
-      <mat-hint>Opcional</mat-hint>
+      <mat-hint>Opcional · líneas operativas</mat-hint>
     </mat-form-field>
 
     @for (tipo of tipos; track tipo) {

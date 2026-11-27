@@ -1,13 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { API_URL } from '../api';
-import { Carrera, Facultad, LineaInvestigacion } from '../models/catalogos';
+import { Carrera, Facultad, LineaAmbito, LineaMatriz, LineaOperativa, LineaPotencial } from '../models/catalogos';
 import { Rol } from '../models/usuario';
 
-interface TiposCatalogo {
+export interface TiposCatalogo {
   facultades: Facultad;
   carreras: Carrera;
-  lineas: LineaInvestigacion;
+  matrices: LineaMatriz;
+  ambitos: LineaAmbito;
+  potenciales: LineaPotencial;
+  operativas: LineaOperativa;
   roles: Rol;
 }
 

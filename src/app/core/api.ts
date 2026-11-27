@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-export const API_URL = 'http://localhost/tetBack/api';
+// Ruta relativa: en el servidor tetBack está junto al front; en desarrollo lo reenvía proxy.conf.json
+export const API_URL = '/tetBack/api';
 
 /** Mensaje legible de un error de tetBack, que responde { error: '...' } */
 export function mensajeError(e: unknown) {

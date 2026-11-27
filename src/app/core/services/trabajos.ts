@@ -21,6 +21,16 @@ export class TrabajosApi {
     return this.http.get<Estadisticas>(`${this.url}/estadisticas.php`);
   }
 
+  /** Publica o retira del sitio público; el backend exige que esté completo para publicar */
+  publicar(id: number, publicado: boolean) {
+    return this.http.post<{ id: number; publicado: boolean }>(`${this.url}/publicar.php`, { publicado }, { params: { id } });
+  }
+
+  /** Descarga un archivo con el token de sesión, para ver los de trabajos no publicados */
+  blob(url: string) {
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
   urlArchivo(id: number, tipo: 'resumen' | 'tesis') {
     return `${this.url}/archivo.php?id=${id}&tipo=${tipo}`;
   }

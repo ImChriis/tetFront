@@ -10,8 +10,29 @@ export interface Carrera {
   facultad_id: number;
 }
 
-export interface LineaInvestigacion {
+// Líneas de investigación en cuatro niveles: matriz → ámbito → potencial → operativa
+export interface LineaMatriz {
   id: number;
-  nombre_linea: string;
-  eje_tematico: string;
+  nombre: string;
+}
+
+export interface LineaAmbito {
+  id: number;
+  matriz_id: number;
+  nombre: string;
+}
+
+export interface LineaPotencial {
+  id: number;
+  matriz_id: number;
+  /** null cuando la matriz no tiene ámbito */
+  ambito_id: number | null;
+  nombre: string;
+}
+
+/** La que se asigna a los trabajos */
+export interface LineaOperativa {
+  id: number;
+  potencial_id: number;
+  nombre: string;
 }
